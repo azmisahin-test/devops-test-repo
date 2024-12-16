@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment-canary
+  labels:
+    app: devops-app
+    version: canary
+spec:
+  replicas: 1  # Daha az replica, çünkü sadece bazı kullanıcılara sunulacak
+  selector:
+    matchLabels:
+      app: devops-app
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: devops-app
+        version: canary
+    spec:
+      containers:
+        - name: devops-app
+          image: devops-app:1.1.0  # Yeni canary sürümü
+          ports:
+            - containerPort: 52000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            - name: PORT
+              value: "52000"
+            - name: VERSION
+              value: "1.1.0"
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          command: ["npm", "start"]
+      volumes:
+        - name: app-volume
+          hostPath:
+            path: /mnt/data

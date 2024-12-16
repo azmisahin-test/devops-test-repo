@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    sh 'npm test'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    kubectl apply -f k8s/deployment.yaml
+                }
+            }
+        }
+        stage('Rollback') {
+            steps {
+                script {
+                    kubectl rollout undo deployment/app-deployment
+                }
+            }
+        }
+    }
+}

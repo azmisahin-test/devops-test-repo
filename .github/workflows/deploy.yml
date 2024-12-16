@@ -1,0 +1,38 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main  # Ana dala her push yapıldığında tetiklenecek
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # İşlemci olarak ubuntu kullanılacak
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Kodun çekilmesi için
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1  # Docker buildx kurulumu
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2  # Docker katmanlarını cache'lemek için
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build Docker image
+        run: |
+          docker build -t devops-app:${{ github.sha }} .  # Docker imajını oluşturuyor
+
+      - name: Push Docker image to DockerHub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub giriş
+          docker push devops-app:${{ github.sha }}  # İmajı Docker Hub'a gönderme
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/app-deployment devops-app=devops-app:${{ github.sha }}  # Kubernetes Deployment'da imajı güncelle
+          kubectl rollout status deployment/app-deployment  # Deployment'ın başarıyla güncellenmesini bekleyin

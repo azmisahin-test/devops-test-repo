@@ -1,0 +1,13 @@
+stage('Deploy') {
+    steps {
+        script {
+            try {
+                kubectl.apply('-f', 'k8s/deployment.yaml')
+            } catch (Exception e) {
+                echo "Deployment failed, rolling back to previous version"
+                kubectl.rollout.undo('deployment/app-deployment')
+                throw e
+            }
+        }
+    }
+}

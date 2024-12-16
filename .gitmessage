@@ -1,0 +1,16 @@
+# Commit mesajı şablonu:
+# <type>: <subject> (Max 50 char)
+#
+# <type>: commit tipi (örneğin: feature, bugfix, docs, vs.)
+# <subject>: 50 karakterle sınırlı bir konu başlığı yazılacak
+#
+# Açıklama (Opsiyonel):
+# Commit'in ne yaptığına dair kısa bir açıklama ekleyin
+#
+# - commit tipi: feature, bugfix, docs, vs.
+# - commit açıklaması: Ne yapıldığı ve neden yapıldığına dair kısa açıklama
+#
+# Örnek:
+# feature: yeni kullanıcı girişi ekranı eklendi
+#
+# --- COMMIT END ---
